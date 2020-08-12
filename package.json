@@ -1,0 +1,28 @@
+{
+  "name": "pharmacy",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "core-js": "^2.6.5",
+    "iview": "^3.4.2",
+    "vue": "^2.6.10",
+    "vue-aliplayer": "0.0.9",
+    "vue-router": "^3.0.3",
+    "vue-video-player": "^5.0.2",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.0.1",
+    "@vue/cli-service": "^3.0.1",
+    "compression-webpack-plugin": "^3.0.0",
+    "less": "^3.0.4",
+    "less-loader": "^4.1.0",
+    "vue-clipboard2": "^0.3.1",
+    "vue-template-compiler": "^2.6.10"
+  }
+}
