@@ -170,7 +170,7 @@
                             <router-link to="/">浏览器下载</router-link>
                         </li>
                         <li>
-                            <router-link to="/">京ICP备09093936号-2</router-link>
+                            <router-link to="/">粤ICP备2020081056号－1</router-link>
                         </li>
                     </ul>
                 </div>
