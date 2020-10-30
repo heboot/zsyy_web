@@ -72,6 +72,25 @@ http.post = (url, data) => {
     })
   })
 }
+
+// json
+http.post2 = (url, data) => {
+  return new Promise((resolve, reject) => {
+    http.ajax.post(url, data).then((res) => {
+      if (res.status == 200) {
+        
+          resolve(res.data)
+         
+      } else {
+        reject(res.data);
+      }
+    }).catch((error) => {
+      reject(error)
+      Message.error(error)
+    })
+  })
+}
+
 // formd
 http.form = (url, data) => {
     return new Promise((resolve, reject) => {

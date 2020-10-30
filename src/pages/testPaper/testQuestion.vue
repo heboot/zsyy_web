@@ -3,7 +3,10 @@
         <div class="exerciseBox">
             <div class="exerciseTitle">
                 <div class="title flex-btween">
-                    <div class="leftTitle">{{bank.bankTitle}}<span><span class="num">{{questionCur+1}}</span>/{{questionList.length}}</span></div>
+                    <div class="leftTitle">
+                        {{bank.testTitle}}
+                       <br/>
+                        <span class="num">{{questionCur+1}}</span><span></span>/{{questionList.length}}</span> <span v-if="bank.testTime==null">(请在{{countDownStr}}内完成答题，超时后自动提交试卷)</span></div>
                     <div class="rightTime">{{timeStr}}</div>
                 </div>
                 <div class="content flex-btween">
@@ -74,6 +77,8 @@
 </template>
 
 <script>
+import storage from "../../config/storage";
+import {getSeconds} from "../../util/timeUitl";
 export default {
     data() {
         return {
@@ -86,15 +91,26 @@ export default {
             ms: 0,
             s: 0,
             time: 0,
-            score:0
+            score:0,
+            countDown:-1,
+            countDownStr:""
         };
     },
     mounted(){
         this.findQuestion();
         this.start();
+        this.s =Number(storage.get("currentS") == null?0:storage.get("currentS"));
+        if(storage.get("countDown") != null){
+            this.countDown = Number(storage.get("countDown"))
+        }
     },
     created() {
         
+    },
+    destroyed(){
+        clearInterval(this.time);
+        storage.remove("currentS")
+        storage.remove("countDown")
     },
     methods: {
         // 选择对于题目
@@ -103,31 +119,23 @@ export default {
         },
         //开始
         start() {
-            this.time = setInterval(this.timer, 50);
+            this.time = setInterval(this.timer, 1000);
         },
         // 计时器
         timer() {
-            //定义计时函数
-            this.ms = this.ms + 50; //毫秒
-            if (this.ms >= 1000) {
-                this.ms = 0;
-                this.s = this.s + 1; //秒
+            
+            this.s = Number(this.s + 1); //秒
+            storage.set("currentS",this.s)
+            this.timeStr = getSeconds(this.s);
+            if(this.countDown!= null && this.countDown > 0){
+                this.countDown = this.countDown-1;
+                this.countDownStr =  getSeconds(this.countDown);
+            }else if(this.countDown != null && this.countDown ==0){
+                clearInterval(this.time);
+                this.$Message.info("答卷时间超时，自动交卷");
+                this.submitAnswer();
             }
-            if (this.s >= 60) {
-                this.s = 0;
-                this.m = this.m + 1; //分钟
-            }
-            if (this.m >= 60) {
-                this.m = 0;
-                this.h = this.h + 1; //小时
-            }
-            this.timeStr =
-                this.toDub(this.h) +
-                ":" +
-                this.toDub(this.m) +
-                ":" +
-                this.toDub(this.s) +
-                "" 
+             storage.set("countDown",this.countDown)
         },
         //补0操作
         toDub(n) {
@@ -139,13 +147,14 @@ export default {
         },
         // 获取题库
         findQuestion() {
-            // this.bank = JSON.parse(localStorage.getItem("bank"));
+            this.bank = JSON.parse(localStorage.getItem("testQuestList"));
+            this.countDown = 1 * 15;
             let questionList = JSON.parse(localStorage.getItem("testQuestList")).questionSubjects
             console.log(JSON.parse(localStorage.getItem("testQuestList")).id);
             questionList.forEach(item => {
                 item.isDone = false;
                 item.isRight = 0;
-                item.questionOptionList.forEach((i,l) => {
+                item.questionOptionList.forEach((i,l) => { 
                     i.isChecked = false;
                     i.option=String.fromCharCode(64 + parseInt(l+1));
                 });

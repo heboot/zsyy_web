@@ -57,7 +57,9 @@
                     </div>
                      <!-- :class="{active:checked}" -->
                     <div class="btn active" v-if="loginP.loginCur==0" @click="userLogin">登录</div>
-                    <div class="btn" :class="{active:checked}" v-if="loginP.loginCur==1" @click="register">注册</div>
+                    <div class="btn" :class="{active:checked}" v-if="loginP.loginCur==1" @click="register">
+                        
+                        {{registerText}}</div>
                 </div>
             </div>
             <!-- 找回密码 -->
@@ -128,12 +130,14 @@ export default {
     },
     data() {
         return {
+            isRegister:false,
             formForget:{
                 mobilePhone:"",
                 msgCode:"",
                 password:"",
                 code:""
             },
+            registerText:"注册",
             ruleForget:{
                 mobilePhone: [
                     {
@@ -233,6 +237,9 @@ export default {
     created() {
         this.getCaptcha(); //获取图片验证码
     },
+    destroyed(){
+        this.isRegister = false;
+    },
     methods: {
         isShow() {
             this.showModel = true;
@@ -240,24 +247,43 @@ export default {
         },
         // 注册
         register() {
-            let data = {
+             this.$refs["formInline"].validate(valid => {
+                  if (valid) {
+                      let data = {
                 mobilePhone: this.formInline.phone,
                 password: this.formInline.password,
                 msgCode: this.formInline.verCode,
                 uuid: this.uuid,
                 code: this.formInline.verImgCode
             };
-            this.$http.post("/register/user/phone", data).then(res => {
+            console.log("注册状态",this.isRegister)
+            if(this.isRegister){
+                return
+            }
+            this.isRegister = true;
+            this.registerText = "注册中";
+            this.$http.post2("/register/user/phone", data).then(res => {
                 console.log(res);
                 if (res.code == 0) {
                     this.$Message.success(res.message);
-                    this.formInline.phone = "";
-                    this.formInline.password = "";
-                    this.formInline.verCode = "";
-                    this.formInline.verImgCode = "";
-                    this.loginP.loginCur = 0; //转为登录
+                    // this.formInline.phone = "";
+                    // this.formInline.password = "";
+                    // this.formInline.verCode = "";
+                    // this.formInline.verImgCode = "";
+                    // this.loginP.loginCur = 0; //转为登录
+                    
+                    console.log("test login type", this.loginP.loginCur)
+                    this.userLogin();
+                }else{
+                     Message.error(res.message)
+                    this.isRegister = false;
+                    this.registerText = "注册";
                 }
             });
+                  }
+             });
+            
+            
         },
         // 登录
         userLogin() {
@@ -275,6 +301,7 @@ export default {
                 })
                 .then(res => {
                     if (res.code == 0) {
+                        console.log("test login type", this.loginP.loginCur)
                         this.$Message.success("登录成功!");
                         storage.set("User_Id", res.data.user.id);
                         storage.set("userInfo", JSON.stringify(res.data.user));
@@ -286,8 +313,18 @@ export default {
                             isLogin: this.isLogin,
                             userInfo: res.data.user
                         };
-                        this.reload();
-                        location.reload();
+                        if(this.loginP.loginCur == 1){
+                             this.isRegister = false;
+                            this.$router.push("setting");
+   this.registerText = "注册";
+                            this.formInline.phone = "";
+                    this.formInline.password = "";
+                    this.formInline.verCode = "";
+                    this.formInline.verImgCode = "";
+                        }else{
+                            this.reload();
+                            location.reload();          
+                        }
                         this.$emit("isLogin", obj);
                     }
                 });
@@ -403,6 +440,7 @@ export default {
         },
         // 关闭弹出层
         close() {
+            this.registerText = "注册";
             this.loginP.showModel = false;
         },
         // 返回上层

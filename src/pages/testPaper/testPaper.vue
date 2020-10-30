@@ -46,6 +46,9 @@
                                         <span>未做数量&nbsp;{{userQuestionBankList.length>0?Number(item.subjectNum)-Number(userQuestionBankList[i].haveNum):""}}</span>
                                     </div>
                                 </div> -->
+                                <div class="time">
+                                    <span v-if="item.startTime!=null">考试起始时间：{{item.startTime}}{{item.endTime}}</span>
+                                </div>
                                 <div class="button" @click="showAlert(item)">开始考试</div>
                             </div>
                         </div>
@@ -246,6 +249,12 @@ export default {
         // 显示弹框
         showAlert(item) {
             if(localStorage.getItem('isLogin')){
+                let currentDate = new Date().valueOf();
+                console.log(item);
+                if(item.endTime != null && currentDate >= item.endTime){
+                        this.$Message.warning("考试已过期，下次早点来哦")
+                        return
+                }
                 this.$Modal.confirm({
                     title: "提示",
                     content: "确认开始考试吗",
