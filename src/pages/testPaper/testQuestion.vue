@@ -6,7 +6,7 @@
                     <div class="leftTitle">
                         {{bank.testTitle}}
                        <br/>
-                        <span class="num">{{questionCur+1}}</span><span></span>/{{questionList.length}}</span> <span v-if="bank.testTime==null">(请在{{countDownStr}}内完成答题，超时后自动提交试卷)</span></div>
+                        <span class="num">{{questionCur+1}}</span><span></span>/{{questionList.length}}</span> <span v-if="bank.testTime!=null">(请在{{countDownStr}}内完成答题，超时后自动提交试卷)</span></div>
                     <div class="rightTime">{{timeStr}}</div>
                 </div>
                 <div class="content flex-btween">
@@ -105,7 +105,7 @@ export default {
         }
     },
     created() {
-        
+        this.map = new Map();
     },
     destroyed(){
         clearInterval(this.time);
@@ -148,7 +148,12 @@ export default {
         // 获取题库
         findQuestion() {
             this.bank = JSON.parse(localStorage.getItem("testQuestList"));
-            this.countDown = 1 * 15;
+            if(this.bank != null &&this.bank.testTime != null){
+                  this.countDown = this.bank.testTime * 60;
+            }else{
+                this.countDown = null;
+            }
+            
             let questionList = JSON.parse(localStorage.getItem("testQuestList")).questionSubjects
             console.log(JSON.parse(localStorage.getItem("testQuestList")).id);
             questionList.forEach(item => {
@@ -247,13 +252,18 @@ export default {
                         this.questionList[index].isDone = true;
                         if (item.isTrue == 1) {
                             this.questionList[index].isRight = 1;
-                            this.score+=this.questionList[index].questionValue;
+                            // this.score+=this.questionList[index].questionValue;
+                            this.map.set(index,this.questionList[index].questionValue);
+                            storage.set("scoreMap",JSON.stringify([...this.map]))
                         } else {
                             this.questionList[index].isRight = 0;
+                            this.map.delete(index);
+                            storage.set("scoreMap",JSON.stringify([...this.map]))
                         }
-                    } else {
+                    }else {
                         item.isChecked = false;
                     }
+                  
                 });
             } else if (type == 1) {
                 list[answerIndex].isChecked = !list[answerIndex].isChecked;
@@ -283,13 +293,25 @@ export default {
                     })
                     if(checkedTrueList.length==trueList.length){
                         this.questionList[index].isRight=1;
-                        this.score+=this.questionList[index].questionValue;
+                        // this.score+=this.questionList[index].questionValue;
+                        this.map.set(index,this.questionList[index].questionValue);
+                        storage.set("scoreMap",JSON.stringify([...this.map]))
+                    }else{
+                        this.map.delete(index);
+                        storage.set("scoreMap",JSON.stringify([...this.map]))
                     }
-                    
                 }else{
                     this.questionList[index].isRight=0;
                 }
             }
+           var scoreCurrent = 0;
+            if( this.map != null){
+                  Array.from(this.map).forEach(item=>{
+                    console.log("map>" , item)
+                    scoreCurrent+= item[1];
+                })
+            }
+           this.score = scoreCurrent;
             this.questionList[index].questionOptionList = list;
         },
         previous(index) {

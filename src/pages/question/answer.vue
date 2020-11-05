@@ -25,11 +25,11 @@
                                         <div>{{answerItem.optionContent}}</div>
                                     </div>
                                 </div>
-								<div class="answer">
+								<!-- <div class="answer">
                                 <div class='flex Atitle'>
-                                    <p>正确答案：<b v-for="(optionsItems,optionIndex) in item.questionOptionList" :key="optionIndex"><b v-if="optionsItems.isTrue">{{optionsItems.option}}</b></b></p>
+                                    <p>正确答案：<b v-for="(optionsItems,optionIndex) in item.questionOptionList" :key="optionIndex"><b v-if="optionsItems.isTrue">{{optionsItems.option}}</b></b></p> -->
                                     <p>你的答案：<b>{{myAnswer[index].answer}}</b></p>
-                                </div>
+                                <!-- </div>
                                 <div class="flex analysis">
                                     <p>答案解析：</p>
                                     <div>{{item.answerExplain}}</div>
@@ -52,7 +52,7 @@
                                         暂无课程
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                                 <div class="btnBox flex-center">
                                     <div :class="{noPre:questionCur==0}" @click="previous(item,index)">上一题</div>
                                     <div :class="{noPre:questionCur+1==questionList.length}" @click="next(item,index)">下一题</div>

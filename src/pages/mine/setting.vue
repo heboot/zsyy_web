@@ -405,6 +405,7 @@ export default {
     },
     mounted(){
         this.userInfo=JSON.parse(localStorage.getItem("userInfo"))
+        this.userInfoFrom = this.userInfo
         this.userInfoFrom.userName=this.userInfo.userName
         this.findUserClass();
         if(this.userInfo.headUrl!=null){
@@ -427,6 +428,12 @@ export default {
                 if(res.code==0){
                     res.data.splice(0,1);
                     this.userClass=res.data
+                    console.log("所有分类",this.userClass)
+                     this.userClass.forEach(item =>{
+                        if(item.id == this.userInfo.userCategoryId ){
+                            this.selectedClass = item;
+                        }
+                    })
                 }
             })
         },

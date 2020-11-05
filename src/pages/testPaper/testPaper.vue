@@ -255,9 +255,14 @@ export default {
                         this.$Message.warning("考试已过期，下次早点来哦")
                         return
                 }
+                if(item.questionSubjects == null || item.questionSubjects.length <= 0){
+                        this.$Message.warning("试题已被清空")
+                        return
+                }
                 this.$Modal.confirm({
                     title: "提示",
                     content: "确认开始考试吗",
+                 
                     onOk: () => {
                         localStorage.setItem("testQuestList",JSON.stringify(item))
                         this.$router.push("/testQuestion");
@@ -288,6 +293,8 @@ export default {
                     this.total = res.data.totalElements;
                     this.totalPages=res.data.totalPages;
                 }
+            }).catch(err =>{
+                console.log("我是异常",err)
             })
         },
         onPageChange(page) {

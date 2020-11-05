@@ -19,6 +19,9 @@
                         <FormItem prop="phone" class="inpItem">
                             <Input type="text" v-model="formInline.phone" placeholder="请输入手机号"></Input>
                         </FormItem>
+                        <FormItem prop="realName" class="inpItem" v-if="loginP.loginCur==1">
+                            <Input type="text" v-model="formInline.realName" placeholder="请输入名字"></Input>
+                        </FormItem>
                         <FormItem prop="verImgCode" class="inpItem verifyByPhone" v-if="loginP.loginCur==1">
                             <div class="verifyBox flex">
                                 <Input type="text" style="width:70%;" class="verCodeInp" v-model="formInline.verImgCode"
@@ -177,6 +180,7 @@ export default {
             },
             formInline: {
                 phone: "",
+                realName:"",
                 password: "",
                 verCode: "",
                 verImgCode: ""
@@ -193,6 +197,13 @@ export default {
                         message: "手机号码格式不正确",
                         trigger: "blur"
                     }
+                ],
+                 realName: [
+                    {
+                        required: true,
+                        message: "请输入名字",
+                        trigger: "blur"
+                    },
                 ],
                 password: [
                     { required: true, message: "请输入密码", trigger: "blur" },
@@ -252,6 +263,7 @@ export default {
                       let data = {
                 mobilePhone: this.formInline.phone,
                 password: this.formInline.password,
+                realName:this.formInline.realName,
                 msgCode: this.formInline.verCode,
                 uuid: this.uuid,
                 code: this.formInline.verImgCode
@@ -272,10 +284,11 @@ export default {
                     // this.formInline.verImgCode = "";
                     // this.loginP.loginCur = 0; //转为登录
                     
-                    console.log("test login type", this.loginP.loginCur)
+                    // console.log("test login type", this.loginP.loginCur)
                     this.userLogin();
                 }else{
-                     Message.error(res.message)
+                    //  console.log("test login type",res)
+                    this.$Message.error(res.message)
                     this.isRegister = false;
                     this.registerText = "注册";
                 }
